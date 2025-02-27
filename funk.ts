@@ -1,38 +1,55 @@
-import { pokemon } from '@/data/pokemon.json';
+import { db } from '@/db';
+import { pokemon as pokemonRaw } from '@/data/pokemon.json';
+import { seed, reset } from 'drizzle-seed';
+import {
+  profiles,
+  pokemon as pokemonTable,
+  type InsertPokemon,
+} from './db/schema';
+import * as schema from './db/schema';
+
+const pokemonSeed = pokemonRaw.map((pokemon: Pokemon) => {
+  const {
+    type,
+    ability,
+    evolutionURL,
+    image,
+    colour,
+    shape,
+    habitat,
+    ...restPokemon
+  } = pokemon;
+  const pokemonDb: InsertPokemon = {
+    ...restPokemon,
+    type: type.map(({ type }) => type) as InsertPokemon['type'],
+    colour: colour as InsertPokemon['colour'],
+    habitat: habitat as InsertPokemon['habitat'],
+    shape: shape as InsertPokemon['shape'],
+  };
+  return pokemonDb;
+});
 
 const main = async () => {
-  const types: PokemonType['type'][] = [];
-  const colours: Pokemon['colour'][] = [];
-  const habitats: Pokemon['habitat'][] = [];
-  const shapes: Pokemon['shape'][] = [];
-
-  for (const mokepon of pokemon) {
-    const { type, colour, habitat, shape } = mokepon;
-
-    const flatTypes = type.map((type) => type.type);
-    flatTypes.forEach((type) => {
-      if (!types.includes(type)) {
-        types.push(type);
-      }
-    });
-
-    if (!colours.includes(colour)) {
-      colours.push(colour);
-    }
-
-    if (!habitats.includes(habitat)) {
-      habitats.push(habitat);
-    }
-
-    if (!shapes.includes(shape)) {
-      shapes.push(shape);
-    }
+  await reset(db, schema);
+  console.log('reset!');
+  await seed(db, { profiles }).refine((f) => ({
+    profiles: {
+      columns: {
+        name: f.fullName(),
+        age: f.int({
+          minValue: 1,
+          maxValue: 99,
+        }),
+      },
+    },
+  }));
+  console.log('seeded profile...');
+  try {
+    await db.insert(pokemonTable).values(pokemonSeed);
+    console.log('seeded pokemon...', pokemonSeed);
+  } catch (e) {
+    console.log('error seeding pokemon', e);
   }
-
-  console.log('colours:', colours);
-  console.log('habitats:', habitats);
-  console.log('shapes:', shapes);
-  console.log('types:', types);
 };
 
 main();

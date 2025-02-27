@@ -1,4 +1,3 @@
-import { pokemon } from '@/data/pokemon.json';
 import {
   Card,
   CardHeader,
@@ -8,19 +7,24 @@ import {
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { pokemonImages } from '@/data/pokemonImages';
+import { db } from '@/db';
+import { pokemon, type SelectPokemon } from '../db/schema';
 
-export default function Home() {
+export default async function Home() {
+  const pokemonFromDb = await db.select().from(pokemon);
   return (
-    <main className='flex p-10 flex-wrap gap-4 flex-1 justify-center'>
-      {pokemon.map((pokemon) => {
-        const { pokedex } = pokemon;
-        return <PokemonCard key={pokedex} pokemon={pokemon} />;
-      })}
+    <main className='flex p-10 w-full'>
+      <div className='flex flex-1 justify-center flex-wrap gap-4 '>
+        {pokemonFromDb.map((pokemon) => {
+          const { pokedex } = pokemon;
+          return <PokemonCard key={pokedex} pokemon={pokemon} />;
+        })}
+      </div>
     </main>
   );
 }
 
-function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
+function PokemonCard({ pokemon }: { pokemon: SelectPokemon }) {
   const { name, description, pokedex } = pokemon;
   const imageKey = name.toLowerCase().replace(' ', '-');
   const pokemonImage = pokemonImages[imageKey as keyof typeof pokemonImages];
@@ -32,7 +36,9 @@ function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
           <CardTitle>{name}</CardTitle>
           <div className='text-xs'>#{pokedex}</div>
         </div>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className='line-clamp-3'>
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent className='flex flex-1 justify-center items-center relative'>
         {!!pokemonImage && (

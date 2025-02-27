@@ -6,7 +6,9 @@ import {
   uuid,
   boolean,
   pgEnum,
+  check,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { timestamps } from './columns.helpers';
 
 export const typeEnum = pgEnum('type', [
@@ -74,36 +76,40 @@ export const habitatEnum = pgEnum('habitat', [
   'unknown',
 ]);
 
-export const profiles = pgTable('profiles', {
-  id: uuid().primaryKey().defaultRandom(),
-  name: text().notNull(),
-  age: integer().notNull(),
-  email: text().notNull().unique(),
-  ...timestamps,
-});
+export const profiles = pgTable(
+  'profiles',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    name: text().notNull(),
+    age: integer().notNull(),
+    email: text().notNull().unique(),
+    ...timestamps,
+  },
+  (table) => [check('age_range', sql`${table.age} > 0 AND ${table.age} < 100`)]
+);
 
 export const pokemon = pgTable('pokemon', {
-  id: serial().primaryKey(),
-  pokedex: integer().notNull().unique(),
+  pokedex: integer().primaryKey(),
   name: text().notNull(),
   description: text().notNull(),
-  isBaby: boolean().notNull(),
-  isLegendary: boolean().notNull(),
-  isMythical: boolean().notNull(),
+  isBaby: boolean('is_baby').notNull(),
+  isLegendary: boolean('is_legendary').notNull(),
+  isMythical: boolean('is_mythical').notNull(),
   height: integer().notNull(),
   weight: integer().notNull(),
   experience: integer().notNull(),
   hp: integer().notNull(),
   attack: integer().notNull(),
   defense: integer().notNull(),
-  specialAttack: integer().notNull(),
-  specialDefense: integer().notNull(),
+  specialAttack: integer('special_attack').notNull(),
+  specialDefense: integer('special_defense').notNull(),
   speed: integer().notNull(),
   happiness: integer().notNull(),
   colour: colourEnum(),
   habitat: habitatEnum(),
   shape: shapeEnum(),
-  type: typeEnum(),
+  type: typeEnum().array(),
+  evolvesFrom: text('evolves_from'),
   ...timestamps,
 });
 
