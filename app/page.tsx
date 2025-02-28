@@ -9,8 +9,16 @@ import Image from 'next/image';
 import { pokemonImages } from '@/data/pokemonImages';
 import { db } from '@/db';
 import { pokemon, type SelectPokemon } from '../db/schema';
+import { auth, currentUser } from '@clerk/nextjs/server';
 
 export default async function Home() {
+  const { userId, redirectToSignIn } = await auth();
+
+  if (!userId) return redirectToSignIn();
+
+  const user = await currentUser();
+  console.log(user);
+
   const pokemonFromDb = await db.select().from(pokemon);
   return (
     <main className='flex p-10 w-full'>

@@ -1,14 +1,4 @@
-import {
-  integer,
-  pgTable,
-  serial,
-  text,
-  uuid,
-  boolean,
-  pgEnum,
-  check,
-} from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
+import { integer, pgTable, text, boolean, pgEnum } from 'drizzle-orm/pg-core';
 import { timestamps } from './columns.helpers';
 
 export const typeEnum = pgEnum('type', [
@@ -76,17 +66,12 @@ export const habitatEnum = pgEnum('habitat', [
   'unknown',
 ]);
 
-export const profiles = pgTable(
-  'profiles',
-  {
-    id: uuid().primaryKey().defaultRandom(),
-    name: text().notNull(),
-    age: integer().notNull(),
-    email: text().notNull().unique(),
-    ...timestamps,
-  },
-  (table) => [check('age_range', sql`${table.age} > 0 AND ${table.age} < 100`)]
-);
+export const profiles = pgTable('profiles', {
+  userId: text('user_id').primaryKey(),
+  name: text().notNull(),
+  jobTitle: text('job_title').notNull(),
+  ...timestamps,
+});
 
 export const pokemon = pgTable('pokemon', {
   pokedex: integer().primaryKey(),

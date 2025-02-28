@@ -5,8 +5,8 @@ import {
   profiles,
   pokemon as pokemonTable,
   type InsertPokemon,
-} from './db/schema';
-import * as schema from './db/schema';
+} from './schema';
+import * as schema from './schema';
 
 const pokemonSeed = pokemonRaw.map((pokemon: Pokemon) => {
   const {
@@ -32,18 +32,6 @@ const pokemonSeed = pokemonRaw.map((pokemon: Pokemon) => {
 const main = async () => {
   await reset(db, schema);
   console.log('reset!');
-  await seed(db, { profiles }).refine((f) => ({
-    profiles: {
-      columns: {
-        name: f.fullName(),
-        age: f.int({
-          minValue: 1,
-          maxValue: 99,
-        }),
-      },
-    },
-  }));
-  console.log('seeded profile...');
   try {
     await db.insert(pokemonTable).values(pokemonSeed);
     console.log('seeded pokemon...', pokemonSeed);

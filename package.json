@@ -11,9 +11,12 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "funk": "tsx funk.ts"
+    "db:check": "drizzle-kit check",
+    "seed": "tsx ./db/seed.ts"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.12.1",
+    "@radix-ui/react-slot": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
