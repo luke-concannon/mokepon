@@ -36,15 +36,15 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen`}
         >
-          <header className='flex justify-end items-center p-4 gap-4 h-16'>
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton />
-            </SignedOut>
-            <SignedIn>
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <nav className='flex w-16 h-screen fixed flex-col left-0 top-0 justify-start items-center p-4 gap-4'>
               <UserButton />
-            </SignedIn>
-          </header>
+            </nav>
+          </SignedIn>
           {children}
         </body>
       </html>

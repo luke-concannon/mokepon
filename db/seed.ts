@@ -1,11 +1,7 @@
 import { db } from '@/db';
 import { pokemon as pokemonRaw } from '@/data/pokemon.json';
-import { seed, reset } from 'drizzle-seed';
-import {
-  profiles,
-  pokemon as pokemonTable,
-  type InsertPokemon,
-} from './schema';
+import { reset } from 'drizzle-seed';
+import { pokemon as pokemonTable, type InsertPokemon } from './schema';
 import * as schema from './schema';
 
 const pokemonSeed = pokemonRaw.map((pokemon: Pokemon) => {

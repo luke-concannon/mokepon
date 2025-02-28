@@ -95,6 +95,7 @@ export const pokemon = pgTable('pokemon', {
   shape: shapeEnum(),
   type: typeEnum().array(),
   evolvesFrom: text('evolves_from'),
+  likes: integer().default(0).notNull(),
   ...timestamps,
 });
 
