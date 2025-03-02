@@ -8,34 +8,47 @@ import {
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { pokemonImages } from '@/data/pokemonImages';
-import { db } from '@/db';
-import { pokemon, type SelectPokemon } from '../db/schema';
 import { auth } from '@clerk/nextjs/server';
 import { LikesButton } from './LikesButton';
+import { getPokemon } from './_db';
+import type { PokemonWithLikes } from '../db/schema';
+import { unauthorized } from 'next/navigation';
 
 export default async function Home() {
-  const { userId, redirectToSignIn } = await auth();
+  const { userId } = await auth();
+  if (!userId) unauthorized();
+  const pokemonWithLikes = await getPokemon();
 
-  if (!userId) return redirectToSignIn();
-
-  const pokemonFromDb = await db
-    .select()
-    .from(pokemon)
-    .limit(10)
-    .orderBy(pokemon.pokedex);
   return (
     <main className='flex p-10 w-full'>
       <div className='flex flex-1 justify-center flex-wrap gap-4 '>
-        {pokemonFromDb.map((pokemon) => {
-          const { pokedex } = pokemon;
-          return <PokemonCard key={pokedex} pokemon={pokemon} />;
+        {pokemonWithLikes.map((pokemon) => {
+          const { pokedex, pokemonLikes } = pokemon;
+          const userLikesPokemon = pokemonLikes.some(
+            ({ profileId, pokemonId }) =>
+              profileId === userId && pokemonId === pokedex
+          );
+
+          return (
+            <PokemonCard
+              key={pokedex}
+              pokemon={pokemon}
+              userLikesPokemon={userLikesPokemon}
+            />
+          );
         })}
       </div>
     </main>
   );
 }
 
-function PokemonCard({ pokemon }: { pokemon: SelectPokemon }) {
+function PokemonCard({
+  pokemon,
+  userLikesPokemon,
+}: {
+  pokemon: PokemonWithLikes;
+  userLikesPokemon: boolean;
+}) {
   const { name, description, pokedex } = pokemon;
   const imageKey = name.toLowerCase().replace(' ', '-');
   const pokemonImage = pokemonImages[imageKey as keyof typeof pokemonImages];
@@ -64,7 +77,7 @@ function PokemonCard({ pokemon }: { pokemon: SelectPokemon }) {
         )}
       </CardContent>
       <CardFooter className='absolute bottom-0 left-0 p-2 w-full flex'>
-        <LikesButton pokemon={pokemon} />
+        <LikesButton pokemon={pokemon} userLikesPokemon={userLikesPokemon} />
       </CardFooter>
     </Card>
   );
