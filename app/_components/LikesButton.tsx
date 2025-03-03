@@ -6,7 +6,7 @@ import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PokemonWithLikes } from '@/db/schema';
-import { likePokemon, unlikePokemon } from './_actions';
+import { likePokemon, unlikePokemon } from '../_actions';
 
 interface LikesButtonProps {
   pokemon: PokemonWithLikes;

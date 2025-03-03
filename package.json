@@ -18,6 +18,8 @@
     "@clerk/nextjs": "^6.12.1",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.1.2",
+    "@tanstack/react-virtual": "^3.13.2",
+    "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

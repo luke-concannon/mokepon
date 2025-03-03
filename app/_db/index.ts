@@ -5,7 +5,7 @@ export const getPokemon = async () => {
     with: {
       pokemonLikes: true,
     },
-    limit: 30,
+    // limit: 30,
     orderBy: (pokemon, { asc }) => [asc(pokemon.pokedex)],
   });
 };
