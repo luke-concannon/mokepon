@@ -23,7 +23,7 @@ export function PokemonCard({
   const pokemonImage = pokemonImages[imageKey as keyof typeof pokemonImages];
 
   return (
-    <Card className='w-64 h-96 relative'>
+    <Card className='w-64 h-96 shrink-0 relative'>
       <CardHeader>
         <div className='inline-flex justify-between items-center'>
           <CardTitle>{name}</CardTitle>

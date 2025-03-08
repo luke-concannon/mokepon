@@ -1,4 +1,3 @@
-// PokemonListClient.tsx
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
@@ -16,25 +15,35 @@ function PokemonListClient({
   userId,
 }: PokemonListClientProps) {
   const listRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Card dimensions
   const cardWidth = 256; // w-64 = 16rem = 256px
   const cardHeight = 384; // h-96 = 24rem = 384px
   const horizontalGap = 16; // gap-4 = 1rem = 16px
   const verticalGap = 16; // Same vertical gap as horizontal
+  const padding = 40; // p-10 = 2.5rem = 40px
+  const sidebarPadding = 56; // Additional pl-[56px] for sidebar
+  const totalLeftPadding = padding + sidebarPadding; // Combined left padding
 
   // Calculate cards per row based on available width
   const getCardsPerRow = () => {
+    if (!containerRef.current) return 1;
+    // Account for padding on all sides with extra on the left
+    const containerWidth =
+      containerRef.current.clientWidth - padding - totalLeftPadding - padding;
     return Math.max(
       1,
-      Math.floor(window.innerWidth / (cardWidth + horizontalGap))
+      Math.floor((containerWidth + horizontalGap) / (cardWidth + horizontalGap))
     );
   };
 
-  const [cardsPerRow, setCardsPerRow] = useState(getCardsPerRow());
+  const [cardsPerRow, setCardsPerRow] = useState(1); // Start with 1 and update after mount
 
-  // Update cards per row on window resize
+  // Update cards per row on mount and window resize
   useEffect(() => {
+    setCardsPerRow(getCardsPerRow());
+
     const handleResize = () => {
       setCardsPerRow(getCardsPerRow());
     };
@@ -54,8 +63,10 @@ function PokemonListClient({
   });
 
   return (
-    <div ref={listRef} className='w-full'>
+    <div ref={containerRef} className='w-full p-10 pl-[96px]'>
+      {/* pl-[96px] = p-10 (40px) + pl-[56px] = 96px total left padding */}
       <div
+        ref={listRef}
         style={{
           height: `${virtualizer.getTotalSize()}px`,
           width: '100%',
@@ -65,6 +76,14 @@ function PokemonListClient({
         {virtualizer.getVirtualItems().map((virtualRow) => {
           const rowIndex = virtualRow.index;
           const startIndex = rowIndex * cardsPerRow;
+          const itemsInRow = Math.min(
+            cardsPerRow,
+            pokemonWithLikes.length - startIndex
+          );
+
+          // Calculate the width needed for this row's cards
+          const rowWidth =
+            itemsInRow * cardWidth + (itemsInRow - 1) * horizontalGap;
 
           return (
             <div
@@ -79,33 +98,44 @@ function PokemonListClient({
                   virtualRow.start - virtualizer.options.scrollMargin
                 }px)`,
                 display: 'flex',
-                justifyContent: 'center',
-                gap: `${horizontalGap}px`,
+                flexWrap: 'nowrap',
+                justifyContent: 'center', // Center the row
                 padding: '0',
                 marginBottom: `${verticalGap}px`,
               }}
             >
-              {Array.from({ length: cardsPerRow }).map((_, columnIndex) => {
-                const pokemonIndex = startIndex + columnIndex;
+              <div
+                style={{
+                  display: 'flex',
+                  gap: `${horizontalGap}px`,
+                  width: `${rowWidth}px`, // Set exact width for the row content
+                  flexShrink: 0,
+                }}
+              >
+                {Array.from({ length: itemsInRow }).map((_, columnIndex) => {
+                  const pokemonIndex = startIndex + columnIndex;
+                  const pokemon = pokemonWithLikes[pokemonIndex];
+                  const userLikesPokemon = pokemon.pokemonLikes.some(
+                    ({ profileId, pokemonId }) =>
+                      profileId === userId && pokemonId === pokemon.pokedex
+                  );
 
-                if (pokemonIndex >= pokemonWithLikes.length) {
-                  return <div key={columnIndex} style={{ width: cardWidth }} />;
-                }
-
-                const pokemon = pokemonWithLikes[pokemonIndex];
-                const userLikesPokemon = pokemon.pokemonLikes.some(
-                  ({ profileId, pokemonId }) =>
-                    profileId === userId && pokemonId === pokemon.pokedex
-                );
-
-                return (
-                  <PokemonCard
-                    key={pokemon.pokedex}
-                    pokemon={pokemon}
-                    userLikesPokemon={userLikesPokemon}
-                  />
-                );
-              })}
+                  return (
+                    <div
+                      key={pokemon.pokedex}
+                      style={{
+                        width: `${cardWidth}px`,
+                        flexShrink: 0,
+                      }}
+                    >
+                      <PokemonCard
+                        pokemon={pokemon}
+                        userLikesPokemon={userLikesPokemon}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}

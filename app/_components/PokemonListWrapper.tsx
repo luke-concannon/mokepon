@@ -1,11 +1,9 @@
-// PokemonListWrapper.tsx
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import type { PokemonWithLikes } from '@/db/schema';
 
-// Dynamically import the actual list component with SSR disabled
 const DynamicPokemonList = dynamic(() => import('./PokemonListClient'), {
   ssr: false,
   loading: () => (

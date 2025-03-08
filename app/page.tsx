@@ -1,4 +1,3 @@
-// page.tsx
 import { auth } from '@clerk/nextjs/server';
 import { getPokemon } from './_db';
 import { unauthorized } from 'next/navigation';
@@ -10,8 +9,6 @@ export default async function Home() {
   const pokemonWithLikes = await getPokemon();
 
   return (
-    <main className='flex p-10 w-full'>
-      <PokemonListWrapper pokemonWithLikes={pokemonWithLikes} userId={userId} />
-    </main>
+    <PokemonListWrapper pokemonWithLikes={pokemonWithLikes} userId={userId} />
   );
 }

@@ -17,7 +17,10 @@
   "dependencies": {
     "@clerk/nextjs": "^6.12.1",
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-virtual": "^3.13.2",
     "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
     "class-variance-authority": "^0.7.1",
@@ -32,7 +35,8 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
-    "tsx": "^4.19.3"
+    "tsx": "^4.19.3",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
