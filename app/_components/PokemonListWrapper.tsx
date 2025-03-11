@@ -14,13 +14,13 @@ const DynamicPokemonList = dynamic(() => import('./PokemonListClient'), {
 });
 
 interface PokemonListWrapperProps {
-  pokemonWithLikes: PokemonWithLikes[];
   userId: string;
+  allPokemon: PokemonWithLikes[];
 }
 
 export function PokemonListWrapper({
-  pokemonWithLikes,
   userId,
+  allPokemon,
 }: PokemonListWrapperProps) {
   return (
     <Suspense
@@ -30,7 +30,7 @@ export function PokemonListWrapper({
         </div>
       }
     >
-      <DynamicPokemonList pokemonWithLikes={pokemonWithLikes} userId={userId} />
+      <DynamicPokemonList userId={userId} allPokemon={allPokemon} />
     </Suspense>
   );
 }

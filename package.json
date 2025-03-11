@@ -12,7 +12,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:check": "drizzle-kit check",
-    "seed": "tsx ./db/seed.ts"
+    "db:seed": "tsx ./db/seed.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.1",

@@ -16,13 +16,14 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { SignedIn, UserButton } from '@clerk/nextjs';
-import { useSearchStore } from '../_store';
+import { usePokemonStore, usePokemonStoreActions } from '../_store';
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
 
 export function AppSidebar() {
   const [open, setOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
-  const { openSearch, setOpenSearch } = useSearchStore();
+  const { openSearch } = usePokemonStore();
+  const { setOpenSearch } = usePokemonStoreActions();
   const [searchKeys, setSearchKeys] = useState<['meta', 'k'] | ['ctrl', 'k']>([
     'meta',
     'k',

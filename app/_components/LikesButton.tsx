@@ -1,6 +1,6 @@
 'use client';
 
-import { useOptimistic, startTransition } from 'react';
+import { useOptimistic, startTransition, useEffect } from 'react';
 import { HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { Button } from '@/components/ui/button';
@@ -30,17 +30,13 @@ export const LikesButton = ({
       totalLikes: pokemonLikes.length,
     },
     (currentState, newOptimisticPokemonLike: boolean) => {
-      if (newOptimisticPokemonLike) {
-        return {
-          userLikesPokemon: true,
-          totalLikes: currentState.totalLikes + 1,
-        };
-      } else {
-        return {
-          userLikesPokemon: false,
-          totalLikes: currentState.totalLikes - 1,
-        };
-      }
+      const newTotalLikes = newOptimisticPokemonLike
+        ? currentState.totalLikes + 1
+        : currentState.totalLikes - 1;
+      return {
+        userLikesPokemon: newOptimisticPokemonLike,
+        totalLikes: newTotalLikes,
+      };
     }
   );
 

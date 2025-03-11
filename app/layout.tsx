@@ -4,6 +4,9 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AppSidebar } from './_components/AppSiderbar';
 import { SearchDialog } from './_components/SearchDialog';
+import { PokemonStore } from './_store';
+import { getPokemon } from './_db';
+import { PokemonDetailDialog } from './_components/PokemonDetailDialog';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -20,7 +23,7 @@ export const metadata: Metadata = {
   description: 'Gotta catch em all...',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -31,9 +34,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen`}
         >
-          <AppSidebar />
-          <SearchDialog />
-          <main className='w-full'>{children}</main>
+          {children}
         </body>
       </html>
     </ClerkProvider>

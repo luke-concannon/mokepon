@@ -3,19 +3,18 @@
 import { useRef, useState, useEffect } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { PokemonCard } from './PokemonCard';
+import { usePokemonStore } from '../_store';
 import type { PokemonWithLikes } from '@/db/schema';
 
 interface PokemonListClientProps {
-  pokemonWithLikes: PokemonWithLikes[];
   userId: string;
+  allPokemon: PokemonWithLikes[];
 }
 
-function PokemonListClient({
-  pokemonWithLikes,
-  userId,
-}: PokemonListClientProps) {
+function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
   const listRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const { pokemon } = usePokemonStore();
 
   // Card dimensions
   const cardWidth = 256; // w-64 = 16rem = 256px
@@ -53,7 +52,7 @@ function PokemonListClient({
   }, []);
 
   // Calculate total number of rows
-  const rowCount = Math.ceil(pokemonWithLikes.length / cardsPerRow);
+  const rowCount = Math.ceil(pokemon.length / cardsPerRow);
 
   const virtualizer = useWindowVirtualizer({
     count: rowCount,
@@ -76,10 +75,7 @@ function PokemonListClient({
         {virtualizer.getVirtualItems().map((virtualRow) => {
           const rowIndex = virtualRow.index;
           const startIndex = rowIndex * cardsPerRow;
-          const itemsInRow = Math.min(
-            cardsPerRow,
-            pokemonWithLikes.length - startIndex
-          );
+          const itemsInRow = Math.min(cardsPerRow, pokemon.length - startIndex);
 
           // Calculate the width needed for this row's cards
           const rowWidth =
@@ -114,22 +110,23 @@ function PokemonListClient({
               >
                 {Array.from({ length: itemsInRow }).map((_, columnIndex) => {
                   const pokemonIndex = startIndex + columnIndex;
-                  const pokemon = pokemonWithLikes[pokemonIndex];
-                  const userLikesPokemon = pokemon.pokemonLikes.some(
+                  const singlePokemon = pokemon[pokemonIndex];
+                  const userLikesPokemon = singlePokemon.pokemonLikes.some(
                     ({ profileId, pokemonId }) =>
-                      profileId === userId && pokemonId === pokemon.pokedex
+                      profileId === userId &&
+                      pokemonId === singlePokemon.pokedex
                   );
 
                   return (
                     <div
-                      key={pokemon.pokedex}
+                      key={singlePokemon.pokedex}
                       style={{
                         width: `${cardWidth}px`,
                         flexShrink: 0,
                       }}
                     >
                       <PokemonCard
-                        pokemon={pokemon}
+                        pokemon={singlePokemon}
                         userLikesPokemon={userLikesPokemon}
                       />
                     </div>
