@@ -111,10 +111,14 @@ function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
                 {Array.from({ length: itemsInRow }).map((_, columnIndex) => {
                   const pokemonIndex = startIndex + columnIndex;
                   const singlePokemon = pokemon[pokemonIndex];
-                  const userLikesPokemon = singlePokemon.pokemonLikes.some(
+                  const serverPokemon = allPokemon.find(
+                    ({ pokedex }) => pokedex === singlePokemon.pokedex
+                  );
+                  if (!serverPokemon) return null;
+                  const userLikesPokemon = serverPokemon.pokemonLikes.some(
                     ({ profileId, pokemonId }) =>
                       profileId === userId &&
-                      pokemonId === singlePokemon.pokedex
+                      pokemonId === serverPokemon.pokedex
                   );
 
                   return (
@@ -126,8 +130,8 @@ function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
                       }}
                     >
                       <PokemonCard
-                        pokemon={singlePokemon}
-                        userLikesPokemon={userLikesPokemon}
+                        pokemon={serverPokemon}
+                        userLikesPokemon={!!userLikesPokemon}
                       />
                     </div>
                   );
