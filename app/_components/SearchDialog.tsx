@@ -1,6 +1,8 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   Dialog,
   DialogContent,
@@ -24,25 +26,31 @@ export function SearchDialog({
 }: {
   allPokemon: PokemonWithLikes[];
 }) {
-  const { openSearch, searchQuery, pokemon } = usePokemonStore();
+  const { openSearch, pokemon } = usePokemonStore();
   const { setOpenSearch, setSearchQuery, setPokemon } =
     usePokemonStoreActions();
-
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const searchQuery = searchParams.get('search');
+  const { replace } = useRouter();
   const fuse = new Fuse(allPokemon, fuseOptions);
 
-  const filterPokemon = (query: string) => {
-    if (query.length === 0) {
-      setPokemon(allPokemon);
-    } else {
-      const searchResults = fuse.search(query);
-      setPokemon(searchResults.map(({ item }) => item));
-    }
-  };
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const params = new URLSearchParams(searchParams);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    filterPokemon(query);
+    if (value) {
+      params.set('search', value);
+      const searchResults = fuse.search(value);
+      setPokemon(searchResults.map(({ item }) => item));
+    } else {
+      params.delete('search');
+      setPokemon(allPokemon);
+    }
+
+    replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    });
   };
 
   return (
@@ -60,12 +68,12 @@ export function SearchDialog({
           <div className='relative'>
             <Input
               autoFocus
-              value={searchQuery}
+              defaultValue={searchQuery ?? ''}
               onChange={handleSearch}
               placeholder='Search pokemon...'
               className='md:text-xl placeholder:text-xl h-12 font-bold'
             />
-            {searchQuery.length > 0 && (
+            {!!searchQuery?.length && (
               <p className='absolute right-4 transform translate-y-1/2 bottom-1/2 text-pink-400 font-bold text-xs font-sans '>
                 {pokemon.length} pokemon
               </p>

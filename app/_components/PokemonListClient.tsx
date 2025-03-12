@@ -61,6 +61,33 @@ function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
     scrollMargin: listRef.current?.offsetTop ?? 0,
   });
 
+  // Maintain scroll position
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const scrollPosition = window.scrollY || 0;
+      sessionStorage.setItem('scrollPosition', scrollPosition.toString());
+    };
+
+    const restoreScrollPosition = () => {
+      const savedPosition = sessionStorage.getItem('scrollPosition');
+      if (savedPosition) {
+        const scrollY = parseInt(savedPosition, 10);
+        window.scrollTo(0, scrollY);
+        virtualizer.scrollToOffset(scrollY); // Sync virtualizer with scroll position
+      }
+    };
+
+    // Save scroll position before unload
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Restore scroll position on mount
+    restoreScrollPosition();
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [virtualizer]);
+
   return (
     <div ref={containerRef} className='w-full p-10 pl-[96px]'>
       {/* pl-[96px] = p-10 (40px) + pl-[56px] = 96px total left padding */}
