@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/dialog';
 
 import { usePokemonStore, usePokemonStoreActions } from '../_store';
-import type { PokemonWithLikes } from '@/db/schema';
+import type { PokemonWithLikesAndUserLike } from '@/app/_types';
 import Fuse from 'fuse.js';
-import { use, useEffect } from 'react';
 
 const fuseOptions = {
   keys: ['name', 'evolvesFrom'],
@@ -24,11 +23,10 @@ const fuseOptions = {
 export function SearchDialog({
   allPokemon,
 }: {
-  allPokemon: PokemonWithLikes[];
+  allPokemon: PokemonWithLikesAndUserLike[];
 }) {
   const { openSearch, pokemon } = usePokemonStore();
-  const { setOpenSearch, setSearchQuery, setPokemon } =
-    usePokemonStoreActions();
+  const { setOpenSearch, setPokemon } = usePokemonStoreActions();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const searchQuery = searchParams.get('search');

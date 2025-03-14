@@ -7,17 +7,13 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PokemonWithLikes } from '@/db/schema';
 import { likePokemon, unlikePokemon } from '../_actions';
+import type { PokemonWithLikesAndUserLike } from '@/app/_types';
 
 interface LikesButtonProps {
-  pokemon: PokemonWithLikes;
-  userLikesPokemon: boolean;
+  pokemon: PokemonWithLikesAndUserLike;
 }
 
-export const LikesButton = ({
-  pokemon,
-  userLikesPokemon,
-}: LikesButtonProps) => {
-  const { pokedex, pokemonLikes } = pokemon;
+export const LikesButton = ({ pokemon }: LikesButtonProps) => {
   const [
     {
       userLikesPokemon: optimisticUserLikesPokemon,
@@ -26,8 +22,8 @@ export const LikesButton = ({
     toggleOptimisticPokemonLike,
   ] = useOptimistic(
     {
-      userLikesPokemon,
-      totalLikes: pokemonLikes.length,
+      userLikesPokemon: pokemon.userLikesPokemon,
+      totalLikes: pokemon.pokemonLikes.length,
     },
     (currentState, newOptimisticPokemonLike: boolean) => {
       const newTotalLikes = newOptimisticPokemonLike
@@ -40,13 +36,14 @@ export const LikesButton = ({
     }
   );
 
-  const togglePokemonLike = () => {
+  const togglePokemonLike = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     startTransition(async () => {
       toggleOptimisticPokemonLike(!optimisticUserLikesPokemon);
       if (optimisticUserLikesPokemon) {
-        await unlikePokemon(pokedex);
+        await unlikePokemon(pokemon.pokedex);
       } else {
-        await likePokemon(pokedex);
+        await likePokemon(pokemon.pokedex);
       }
     });
   };

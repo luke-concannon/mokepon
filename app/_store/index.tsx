@@ -4,27 +4,27 @@ import { createContext, use, useState } from 'react';
 import { createStore, useStore, type StoreApi } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
-import type { PokemonWithLikes } from '@/db/schema';
+import type { PokemonWithLikesAndUserLike } from '@/app/_types';
 
 const PokemonStoreContext = createContext<StoreApi<any> | null>(null);
 
 interface PokemonStoreState {
   openSearch: boolean;
-  searchQuery: string;
-  focusPokemon: PokemonWithLikes | null;
-  pokemon: PokemonWithLikes[];
+  focusPokemon: PokemonWithLikesAndUserLike | null;
+  pokemonDialogIsOpen: boolean;
+  pokemon: PokemonWithLikesAndUserLike[];
   actions: {
     setOpenSearch: (open: boolean) => void;
-    setSearchQuery: (query: string) => void;
-    setFocusPokemon: (pokedex: PokemonWithLikes | null) => void;
-    setPokemon: (pokemon: PokemonWithLikes[]) => void;
+    setPokemon: (pokemon: PokemonWithLikesAndUserLike[]) => void;
+    openPokemonDialog: (pokemon: PokemonWithLikesAndUserLike) => void;
+    closePokemonDialog: () => void;
   };
 }
 
 interface PokemonStoreProviderProps {
   children: React.ReactNode | null;
   initState: {
-    pokemon: PokemonWithLikes[];
+    pokemon: PokemonWithLikesAndUserLike[];
   };
 }
 
@@ -39,13 +39,14 @@ export const PokemonStore = ({
           ...initState,
           openSearch: false,
           focusPokemon: null,
-          searchQuery: '',
           actions: {
             setOpenSearch: (open: boolean) => set({ openSearch: open }),
-            setSearchQuery: (query: string) => set({ searchQuery: query }),
-            setFocusPokemon: (pokemon: PokemonWithLikes | null) =>
-              set({ focusPokemon: pokemon }),
-            setPokemon: (pokemon: PokemonWithLikes[]) => set({ pokemon }),
+            openPokemonDialog: (pokemon: PokemonWithLikesAndUserLike) =>
+              set({ focusPokemon: pokemon, pokemonDialogIsOpen: true }),
+            closePokemonDialog: () =>
+              set({ pokemonDialogIsOpen: false, focusPokemon: null }),
+            setPokemon: (pokemon: PokemonWithLikesAndUserLike[]) =>
+              set({ pokemon }),
           },
         }),
         { name: 'Store' }

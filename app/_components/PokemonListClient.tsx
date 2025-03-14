@@ -8,7 +8,7 @@ import type { PokemonWithLikes } from '@/db/schema';
 
 interface PokemonListClientProps {
   userId: string;
-  allPokemon: PokemonWithLikes[];
+  allPokemon: (PokemonWithLikes & { userLikesPokemon: boolean })[];
 }
 
 function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {

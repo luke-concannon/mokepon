@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import type { PokemonWithLikes } from '@/db/schema';
 import { pokemonImages } from '@/data/pokemonImages';
-import { PokemonDetailDialog } from './PokemonDetailDialog';
 import {
   Card,
   CardHeader,
@@ -15,23 +13,22 @@ import {
 import Image from 'next/image';
 import { LikesButton } from './LikesButton';
 import { usePokemonStoreActions } from '../_store';
+import type { PokemonWithLikesAndUserLike } from '@/app/_types';
 
 export function PokemonCard({
   pokemon,
   userLikesPokemon,
 }: {
-  pokemon: PokemonWithLikes;
+  pokemon: PokemonWithLikesAndUserLike;
   userLikesPokemon: boolean;
 }) {
   const { name, description, pokedex } = pokemon;
   const imageKey = name.toLowerCase().replace(' ', '-');
   const pokemonImage = pokemonImages[imageKey as keyof typeof pokemonImages];
-  const { setFocusPokemon } = usePokemonStoreActions();
-  const [openDetail, setOpenDetail] = useState(false);
+  const { openPokemonDialog } = usePokemonStoreActions();
 
   const handleClick = () => {
-    setFocusPokemon(pokemon);
-    setOpenDetail(true);
+    openPokemonDialog(pokemon);
   };
 
   return (
@@ -60,7 +57,7 @@ export function PokemonCard({
         />
       </CardContent>
       <CardFooter className='absolute bottom-0 left-0 p-2 w-full flex'>
-        <LikesButton pokemon={pokemon} userLikesPokemon={userLikesPokemon} />
+        <LikesButton pokemon={pokemon} />
       </CardFooter>
     </Card>
   );
