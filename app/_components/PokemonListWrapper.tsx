@@ -2,7 +2,6 @@
 
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import type { PokemonWithLikes } from '@/db/schema';
 
 const DynamicPokemonList = dynamic(() => import('./PokemonListClient'), {
   ssr: false,
@@ -13,15 +12,7 @@ const DynamicPokemonList = dynamic(() => import('./PokemonListClient'), {
   ),
 });
 
-interface PokemonListWrapperProps {
-  userId: string;
-  allPokemon: (PokemonWithLikes & { userLikesPokemon: boolean })[];
-}
-
-export function PokemonListWrapper({
-  userId,
-  allPokemon,
-}: PokemonListWrapperProps) {
+export function PokemonListWrapper() {
   return (
     <Suspense
       fallback={
@@ -30,7 +21,7 @@ export function PokemonListWrapper({
         </div>
       }
     >
-      <DynamicPokemonList userId={userId} allPokemon={allPokemon} />
+      <DynamicPokemonList />
     </Suspense>
   );
 }

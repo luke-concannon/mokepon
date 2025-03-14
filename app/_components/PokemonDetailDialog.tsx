@@ -13,14 +13,17 @@ import Image from 'next/image';
 import { LikesButton } from './LikesButton';
 
 export function PokemonDetailDialog() {
-  const { focusPokemon, pokemonDialogIsOpen } = usePokemonStore();
+  const { focusPokedex, pokemonDialogIsOpen, pokemon } = usePokemonStore();
   const { closePokemonDialog, openPokemonDialog } = usePokemonStoreActions();
+  const focusPokemon = pokemon.find(
+    (pokemon) => pokemon.pokedex === focusPokedex
+  );
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
       closePokemonDialog();
     } else if (focusPokemon) {
-      openPokemonDialog(focusPokemon);
+      openPokemonDialog(focusPokemon.pokedex);
     }
   };
 

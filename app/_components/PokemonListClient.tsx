@@ -4,14 +4,8 @@ import { useRef, useState, useEffect } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { PokemonCard } from './PokemonCard';
 import { usePokemonStore } from '../_store';
-import type { PokemonWithLikes } from '@/db/schema';
 
-interface PokemonListClientProps {
-  userId: string;
-  allPokemon: (PokemonWithLikes & { userLikesPokemon: boolean })[];
-}
-
-function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
+function PokemonListClient() {
   const listRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { pokemon } = usePokemonStore();
@@ -138,15 +132,6 @@ function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
                 {Array.from({ length: itemsInRow }).map((_, columnIndex) => {
                   const pokemonIndex = startIndex + columnIndex;
                   const singlePokemon = pokemon[pokemonIndex];
-                  const serverPokemon = allPokemon.find(
-                    ({ pokedex }) => pokedex === singlePokemon.pokedex
-                  );
-                  if (!serverPokemon) return null;
-                  const userLikesPokemon = serverPokemon.pokemonLikes.some(
-                    ({ profileId, pokemonId }) =>
-                      profileId === userId &&
-                      pokemonId === serverPokemon.pokedex
-                  );
 
                   return (
                     <div
@@ -156,10 +141,7 @@ function PokemonListClient({ userId, allPokemon }: PokemonListClientProps) {
                         flexShrink: 0,
                       }}
                     >
-                      <PokemonCard
-                        pokemon={serverPokemon}
-                        userLikesPokemon={!!userLikesPokemon}
-                      />
+                      <PokemonCard pokemon={singlePokemon} />
                     </div>
                   );
                 })}

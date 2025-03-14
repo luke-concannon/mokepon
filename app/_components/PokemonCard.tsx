@@ -1,6 +1,5 @@
 'use client';
 
-import type { PokemonWithLikes } from '@/db/schema';
 import { pokemonImages } from '@/data/pokemonImages';
 import {
   Card,
@@ -17,10 +16,8 @@ import type { PokemonWithLikesAndUserLike } from '@/app/_types';
 
 export function PokemonCard({
   pokemon,
-  userLikesPokemon,
 }: {
   pokemon: PokemonWithLikesAndUserLike;
-  userLikesPokemon: boolean;
 }) {
   const { name, description, pokedex } = pokemon;
   const imageKey = name.toLowerCase().replace(' ', '-');
@@ -28,7 +25,7 @@ export function PokemonCard({
   const { openPokemonDialog } = usePokemonStoreActions();
 
   const handleClick = () => {
-    openPokemonDialog(pokemon);
+    openPokemonDialog(pokedex);
   };
 
   return (

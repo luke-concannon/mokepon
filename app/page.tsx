@@ -19,15 +19,11 @@ export default async function Home() {
   }));
 
   return (
-    <PokemonStore initState={{ pokemon: pokemonWithLikesAndUserLike }}>
+    <PokemonStore initState={{ userId, pokemon: pokemonWithLikesAndUserLike }}>
       <AppSidebar />
       <SearchDialog allPokemon={pokemonWithLikesAndUserLike} />
       <main className='w-full'>
-        <PokemonListWrapper
-          userId={userId}
-          allPokemon={pokemonWithLikesAndUserLike}
-        />
-        ;
+        <PokemonListWrapper />
         <PokemonDetailDialog />
       </main>
     </PokemonStore>

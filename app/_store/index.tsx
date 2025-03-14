@@ -10,20 +10,23 @@ const PokemonStoreContext = createContext<StoreApi<any> | null>(null);
 
 interface PokemonStoreState {
   openSearch: boolean;
-  focusPokemon: PokemonWithLikesAndUserLike | null;
+  focusPokedex: number | null;
   pokemonDialogIsOpen: boolean;
   pokemon: PokemonWithLikesAndUserLike[];
   actions: {
     setOpenSearch: (open: boolean) => void;
     setPokemon: (pokemon: PokemonWithLikesAndUserLike[]) => void;
-    openPokemonDialog: (pokemon: PokemonWithLikesAndUserLike) => void;
+    openPokemonDialog: (pokedex: number) => void;
     closePokemonDialog: () => void;
+    toggleUserLikesPokemon: (pokedex: number) => void;
+    setFocusPokedex: (pokedex: number | null) => void;
   };
 }
 
 interface PokemonStoreProviderProps {
   children: React.ReactNode | null;
   initState: {
+    userId: string;
     pokemon: PokemonWithLikesAndUserLike[];
   };
 }
@@ -41,12 +44,40 @@ export const PokemonStore = ({
           focusPokemon: null,
           actions: {
             setOpenSearch: (open: boolean) => set({ openSearch: open }),
-            openPokemonDialog: (pokemon: PokemonWithLikesAndUserLike) =>
-              set({ focusPokemon: pokemon, pokemonDialogIsOpen: true }),
+            openPokemonDialog: (pokedex: number) =>
+              set({ pokemonDialogIsOpen: true, focusPokedex: pokedex }),
             closePokemonDialog: () =>
-              set({ pokemonDialogIsOpen: false, focusPokemon: null }),
+              set({ pokemonDialogIsOpen: false, focusPokedex: null }),
             setPokemon: (pokemon: PokemonWithLikesAndUserLike[]) =>
               set({ pokemon }),
+            setFocusPokedex: (pokedex: number | null) =>
+              set({ focusPokedex: pokedex }),
+            toggleUserLikesPokemon: (pokedex: number) => {
+              set((state: PokemonStoreState) => ({
+                pokemon: state.pokemon.map((pokemon) => {
+                  if (pokemon.pokedex === pokedex) {
+                    const updatedPokemonLikes = pokemon.userLikesPokemon
+                      ? pokemon.pokemonLikes.filter(
+                          (like) => like.profileId !== initState.userId
+                        )
+                      : [
+                          ...pokemon.pokemonLikes,
+                          {
+                            profileId: initState.userId,
+                            pokemonId: pokedex,
+                          },
+                        ];
+
+                    return {
+                      ...pokemon,
+                      userLikesPokemon: !pokemon.userLikesPokemon,
+                      pokemonLikes: updatedPokemonLikes,
+                    };
+                  }
+                  return pokemon;
+                }),
+              }));
+            },
           },
         }),
         { name: 'Store' }
